@@ -3,6 +3,7 @@
 #define FN_INJECT		false	// Emulate fault injection in mission layer output
 
 #include <Eigen/Dense>
+#include <fstream>
 #include <memory>
 #include <vector>
 
@@ -39,6 +40,12 @@ public:
 	Proc() override;
 
 private:
+
+	void
+	createLogFileTiming();
+
+	void
+	logTiming(const int& timing);
 
 	void
 	ProcessChassis(const std::shared_ptr<canbus::Chassis> chassis);
@@ -115,6 +122,9 @@ private:
 	std::ofstream log_file_speed_;
 	const std::string log_file_name_speed_;
 
+	bool log_;
+	std::ofstream log_file_timing_;
+	const std::string log_file_name_timing_;
 };
 
 CYBER_REGISTER_COMPONENT (DecisionComponent)

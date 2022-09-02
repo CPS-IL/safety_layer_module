@@ -34,7 +34,10 @@ DecisionComponent::DecisionComponent()
       control_latency_(0.01),
       coverage_limit_(0.75),
       log_speed_(LOG_SPEED),
-      log_file_name_speed_("/apollo/data/log/speed.log.txt") {
+      log_file_name_speed_("/apollo/data/log/speed.log.txt"),
+      log_(true), 
+      log_file_name_timing_(
+          "/apollo/data/log/safety_layer.decision_timing.log.txt") {
   // https://gitlab.engr.illinois.edu/rtesl/synergistic_redundancy/simulation/apollo/-/blob/main/modules/calibration/data/Lincoln2017MKZ/velodyne_params/velodyne128_novatel_extrinsics.yaml
   translation_vector_lidar_.x() = -0.980728924274446;
   translation_vector_lidar_.y() = 0.2579201;
@@ -43,6 +46,7 @@ DecisionComponent::DecisionComponent()
 DecisionComponent::~DecisionComponent()
 {
 	log_file_speed_.close();
+	log_file_timing_.close();
 }
 
 bool
@@ -124,6 +128,7 @@ DecisionComponent::Init()
 	}
 
 	createLogFileSpeed();
+	createLogFileTiming();
 
 	return true;
 }
@@ -159,16 +164,24 @@ DecisionComponent::Proc()
 		if (reader_detections_safety_)
 		{
 			reader_detections_safety_->Observe();
-			ProcessDetections(reader_detections_mission_->GetLatestObserved(),
-				reader_detections_safety_->GetLatestObserved());
 
 			if (reader_mission_layer_trajectory_)
 			{
 				reader_mission_layer_trajectory_->Observe();
+
+				const auto time_point_start = std::chrono::high_resolution_clock::now();
+				ProcessDetections(reader_detections_mission_->GetLatestObserved(),
+					reader_detections_safety_->GetLatestObserved());
+
 				override_ = OverrideDecision(
 							verifiable_obstacle_detection_->getDetectionsSafetyDistanceEndPoints(),
 							verifiable_obstacle_detection_->getDetectionsSafetyCoverages(),
 							reader_mission_layer_trajectory_->GetLatestObserved());
+				const auto time_point_end = std::chrono::high_resolution_clock::now();
+
+				const auto duration = time_point_end - time_point_start;
+				const auto timing = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+				logTiming(timing);
 			}
 			else
 			{
@@ -201,6 +214,46 @@ DecisionComponent::Proc()
 	}
 
 	return true;
+}
+
+void
+DecisionComponent::createLogFileTiming()
+{
+	if (!log_)
+    {
+        return;
+    }
+
+    log_file_timing_.open(log_file_name_timing_, std::fstream::out | std::fstream::trunc);
+
+    if (log_file_timing_.is_open() && log_file_timing_.good())
+    {
+        log_file_timing_ << "Timing (us)" << std::endl;
+    }
+    else
+    {
+        AERROR << "Failed to open timing log file.";
+    }
+}
+
+void
+DecisionComponent::logTiming(const int& timing)
+{
+	if (!log_)
+    {
+        return;
+    }
+
+	AINFO << "Logging timing.";
+
+    if (log_file_timing_.is_open() && log_file_timing_.good())
+    {
+        log_file_timing_ << timing << std::endl;
+    }
+    else
+    {
+        AERROR << "Invalid timing log file stream.";
+    }
 }
 
 void
