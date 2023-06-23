@@ -1,0 +1,9 @@
+[submodule "depth_clustering"]
+	path = lib/depth_clustering
+	url = https://github.com/CPS-IL/depth_clustering.git
+	branch = apollo
+
+[submodule "verifiable_obstacle_detection"]
+	path = lib/verifiable_obstacle_detection
+	url = https://github.com/CPS-IL/verifiable_obstacle_detection.git
+	branch = main

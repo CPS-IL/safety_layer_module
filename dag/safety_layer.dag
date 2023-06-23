@@ -1,0 +1,27 @@
+module_config {
+    module_library : "/apollo/bazel-bin/modules/safety_layer/component/libsafety_layer_component.so"
+
+    timer_components {
+        class_name : "DecisionComponent"
+        config {
+            name : "decision"
+            interval : 10
+        }
+    }
+
+    timer_components {
+        class_name : "LidarComponent"
+        config {
+            name : "lidar"
+            interval : 10
+        }
+    }
+
+    timer_components {
+        class_name : "LoggingComponent"
+        config {
+            name : "logging"
+            interval : 10
+        }
+    }
+}
