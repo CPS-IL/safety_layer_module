@@ -1,5 +1,5 @@
-#define LOG_SPEED		true	// Log vehicle speed to /apollo/data/log/speed.log.txt
-#define MISSION_CRASH	false	// Emulate mission layer crash scenario
+#define LOG_SPEED		false	// Log vehicle speed to /apollo/data/log/speed.log.txt
+#define MISSION_CRASH	true	// Emulate mission layer crash scenario
 #define FN_INJECT		false	// Emulate fault injection in mission layer output
 
 #include <Eigen/Dense>
