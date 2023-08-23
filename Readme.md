@@ -1,1 +1,3 @@
-Please refer to https://github.com/CPS-IL/perception_simplex for usage instructions.
+This repository is for the evaluation of [Perception Simplex](https://github.com/CPS-IL/perception_simplex). Please refer to the usage instructions at [Perception Simplex](https://github.com/CPS-IL/perception_simplex). The engineering version, uploaded and maintained by Simon Yu, is [available here](https://github.com/cpsintegrationlab/cyber_module).
+
+This repository implements a [cyber-rt](https://cyber-rt.readthedocs.io/en/latest/) component, a safety layer for [Apollo](https://github.com/ApolloAuto/apollo) 5.0, that detects obstacle existence detection faults, overriding control outputs to brake to halt if such faults, posing a risk of collision, are detected.
